@@ -1,0 +1,23 @@
+name: 'Parse AWS SSM Parameter values'
+description: 'Parse AWS Systems Manager parameters to environment variables'
+author: 'bomb-on'
+inputs:
+  ssm_parameter:
+    description: 'AWS Systems Manager parameter name (path).'
+    required: true
+  prefix:
+    description: 'Custom environmental variables prefix.'
+    required: false
+    default: AWS_SSM_
+  simple_json:
+    description: 'Parse parameter values as one-level JSON object and convert keys to environmental variables.'
+    required: false
+  jq_filter:
+    description: 'Custom jq filter(s).'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'archive'
+  color: 'gray-dark'
