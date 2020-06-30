@@ -7,7 +7,7 @@ if [[ -z "$AWS_REGION" ]] || [[ -z "$AWS_ACCESS_KEY_ID" ]] || [[ -z "$AWS_SECRET
   exit 1
 fi
 
-if [[ -z "$INPUT_PARAMETER_NAME" ]]; then
+if [[ -z "$INPUT_SSM_PARAMETER" ]]; then
   echo "Set SSM parameter name (parameter_name) value."
   exit 1
 fi
@@ -17,7 +17,7 @@ parameter_name="$INPUT_SSM_PARAMETER"
 prefix="${INPUT_PREFIX:-AWS_SSM_}"
 jq_filter="$INPUT_JQ_FILTER"
 simple_json="$INPUT_SIMPLE_JSON"
-ssm_param=$(aws2 --region "$region" ssm get-parameter --name "$parameter_name")
+ssm_param=$(aws --region "$region" ssm get-parameter --name "$parameter_name")
 
 format_var_name () {
   echo "$1" | awk -v prefix="$prefix" -F. '{print prefix $NF}' | tr "[:lower:]" "[:upper:]"

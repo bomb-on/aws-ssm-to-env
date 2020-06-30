@@ -5,6 +5,7 @@
 ## Table of Contents
 
   * [About](#about)
+  * [Requirements](#requirements)
   * [Usage](#usage)
      * [Parameters](#parameters)
      * [Examples](#examples)
@@ -16,14 +17,18 @@
 
 ## About
 
-This action is designed to read AWS SSM parameters and exports them as environmental variables.
+This action is designed to read [AWS SSM parameters](https://console.aws.amazon.com/systems-manager/parameters) and 
+exports them as environmental variables.
 
 Script can parse string value parameters as well as parameters with stringified JSON values. For simple JSON objects
 a shortcut parameter `simple_json` can be used to convert all key-values from JSON into environmental variables.
 
-**Important note:** Although the AWS CLI command in this Action is very simple, Action is using preview version of
-AWS CLI (version 2) which is still not recommended for production use ([more info](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)).
-Author will update commands after future AWS CLI updates if necessary.
+## Requirements
+
+Action expects 3 secrets to be set in GitHub's repository:
+- `AWS_REGION` - AWS Region (e.g. `us-east1`)
+- `AWS_ACCESS_KEY_ID` - AWS Access Key for user with an SSM access policy (e.g. [AmazonSSMReadOnlyAccess](https://console.aws.amazon.com/iam/home#/policies/arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess$serviceLevelSummary))
+- `AWS_SECRET_ACCESS_KEY` - User's AWS Access Key
 
 ## Usage
 
@@ -33,7 +38,7 @@ Parameter name | Type | Required | Default Value | Description
 --- | --- | --- | --- | ---
 `ssm_parameter` | string | true | | AWS Systems Manager parameter name (path)
 `prefix` | string | false | AWS_SSM_ | Custom environmental variables prefix
-`simple_json` | boolean | true | false | Parse parameter values as one-level JSON object and convert keys to environmental variables  (see example below).
+`simple_json` | boolean | true | false | Parse parameter values as one-level JSON object and convert keys to environmental variables (see example below).
 `jq_params` | string | true | | Custom space-separated [`jq` filters](https://stedolan.github.io/jq/) (see example below).
 
 ### Examples
@@ -58,14 +63,14 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          parameter_name: 'my_parameter_name'
+          ssm_parameter: 'my_parameter_name'
 ```
 
 Example above will set environmental variable `AWS_SSM_MY_PARAMETER_NAME` with value from the AWS SSM parameter itself.
 
 #### Custom prefix
 
-Parse simple string value stored in AWS SSM `my_parameter_name` parameter and export environmental variable with 
+Parse simple string value stored in AWS SSM `my_parameter_name` parameter and export environmental variable with a
 custom prefix:
 ```yaml
 name: Parse SSM parameter
@@ -84,7 +89,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          parameter_name: 'my_parameter_name'
+          ssm_parameter: 'my_parameter_name'
           prefix: FOO_
 ```
 
@@ -110,7 +115,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          parameter_name: 'my_json_parameter'
+          ssm_parameter: 'my_json_parameter'
           simple_json: true
 ```
 
@@ -144,7 +149,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          parameter_name: 'my_json_parameter'
+          ssm_parameter: 'my_json_parameter'
           jq_filter: '.db[]|select(.default).host .db[]|select(.default).port'
           prefix: DB_
 ```
@@ -161,5 +166,5 @@ DB_PORT=1337
 
 ## TODO
 
- - [ ] Use official Docker container once it becomes available (https://github.com/aws/aws-cli/issues/3291, https://github.com/aws/aws-cli/issues/4685)
+ - [x] ~~Use official Docker container once it becomes available (https://github.com/aws/aws-cli/issues/3291, https://github.com/aws/aws-cli/issues/4685)~~
  - [ ] Write tests (https://github.com/kward/shunit2)

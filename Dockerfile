@@ -1,10 +1,6 @@
-FROM ubuntu:latest
+FROM amazon/aws-cli:latest
 
-RUN apt-get update && apt-get install -y curl jq zip
-
-RUN curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-RUN unzip -qq awscliv2.zip
-RUN ./aws/install
+RUN yum -y install jq
 
 COPY entrypoint.sh /entrypoint.sh
 
