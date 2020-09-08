@@ -2,9 +2,12 @@ name: 'Parse AWS SSM Parameter values'
 description: 'Parse AWS Systems Manager parameters to environment variables'
 author: 'bomb-on'
 inputs:
+  ssm_parameter_list:
+    description: 'AWS Systems Manager parameter name (path) list.'
+    required: false
   ssm_parameter:
     description: 'AWS Systems Manager parameter name (path).'
-    required: true
+    required: false
   prefix:
     description: 'Custom environmental variables prefix.'
     required: false
