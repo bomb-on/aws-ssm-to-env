@@ -9,8 +9,8 @@
   * [Usage](#usage)
      * [Parameters](#parameters)
      * [Examples](#examples)
-        * [Singular paramter value](#singular-parameter-value)
-        * [List of parameter values](#list-of-parameter-values)
+        * [Get single parameter value](#get-single-parameter-value)
+        * [Get multiple parameter values](#get-multiple-parameter-values)
         * [Custom prefix](#custom-prefix)
         * [Simple JSON parameter values](#simple-json-parameter-values)
         * [Complex JSON values](#complex-json-values)
@@ -37,14 +37,14 @@ Action expects 3 secrets to be set in GitHub's repository:
 
 Parameter name | Type | Required | Default Value | Description
 --- | --- | --- | --- | ---
-`ssm_parameter_list` | string | true | | AWS Systems Manager parameter name (path) or comma seperated list of paths
+`ssm_parameter_list` | string | true | | AWS Systems Manager parameter name (path) or comma separated list of paths
 `prefix` | string | false | AWS_SSM_ | Custom environmental variables prefix
 `simple_json` | boolean | true | false | Parse parameter values as one-level JSON object and convert keys to environmental variables (see example below).
 `jq_params` | string | true | | Custom space-separated [`jq` filters](https://stedolan.github.io/jq/) (see example below).
 
 ### Examples
 
-#### Singular parameter value
+#### Get single parameter value
 
 Parse simple string value stored in AWS SSM `my_parameter_name` parameter:
 ```yaml
@@ -69,9 +69,9 @@ jobs:
 
 Example above will set environmental variable `AWS_SSM_MY_PARAMETER_NAME` with value from the AWS SSM parameter itself.
 
-#### List of parameter values
+#### Get multiple parameter values
 
-Itterate list of simple string value stored in AWS SSM by providing list of SSM paths:
+Use comma separated list of strings to fetch multiple parameter values at once:
 ```yaml
 name: Parse SSM parameter
 
@@ -94,7 +94,7 @@ jobs:
            my_second_parameter
 ```
 
-Example above will set environmental variable `AWS_SSM_MY_FIRST_PARAMTER` and `AWS_SSM_MY_SECOND_PARAMTER` with corresponding values from AWS SSM.
+Example above will set environmental variable `AWS_SSM_MY_FIRST_PARAMETER` and `AWS_SSM_MY_SECOND_PARAMETER` with corresponding values from AWS SSM.
 
 #### Custom prefix
 
