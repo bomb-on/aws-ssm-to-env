@@ -47,7 +47,7 @@ get_ssm_param() {
 }
 
 for parameter in $(echo $parameter_name_list | sed "s/,/ /g"); do
-get_ssm_param "$parameter"
+  get_ssm_param "$parameter"
 done
 
 
