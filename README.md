@@ -9,7 +9,8 @@
   * [Usage](#usage)
      * [Parameters](#parameters)
      * [Examples](#examples)
-        * [String values](#string-values)
+        * [Get single parameter value](#get-single-parameter-value)
+        * [Get multiple parameter values](#get-multiple-parameter-values)
         * [Custom prefix](#custom-prefix)
         * [Simple JSON parameter values](#simple-json-parameter-values)
         * [Complex JSON values](#complex-json-values)
@@ -36,14 +37,14 @@ Action expects 3 secrets to be set in GitHub's repository:
 
 Parameter name | Type | Required | Default Value | Description
 --- | --- | --- | --- | ---
-`ssm_parameter` | string | true | | AWS Systems Manager parameter name (path)
+`ssm_parameter_list` | string | true | | AWS Systems Manager parameter name (path) or comma separated list of paths
 `prefix` | string | false | AWS_SSM_ | Custom environmental variables prefix
 `simple_json` | boolean | true | false | Parse parameter values as one-level JSON object and convert keys to environmental variables (see example below).
 `jq_params` | string | true | | Custom space-separated [`jq` filters](https://stedolan.github.io/jq/) (see example below).
 
 ### Examples
 
-#### String values
+#### Get single parameter value
 
 Parse simple string value stored in AWS SSM `my_parameter_name` parameter:
 ```yaml
@@ -63,10 +64,37 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          ssm_parameter: 'my_parameter_name'
+          ssm_parameter_list: 'my_parameter_name'
 ```
 
 Example above will set environmental variable `AWS_SSM_MY_PARAMETER_NAME` with value from the AWS SSM parameter itself.
+
+#### Get multiple parameter values
+
+Use comma separated list of strings to fetch multiple parameter values at once:
+```yaml
+name: Parse SSM parameter
+
+on:
+  push
+
+jobs:
+  aws-ssm-to-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: aws-ssm-to-env
+        uses: bomb-on/aws-ssm-to-env@master
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          ssm_parameter_list: |
+           my_first_parameter,
+           my_second_parameter
+```
+
+Example above will set environmental variable `AWS_SSM_MY_FIRST_PARAMETER` and `AWS_SSM_MY_SECOND_PARAMETER` with corresponding values from AWS SSM.
 
 #### Custom prefix
 
@@ -89,7 +117,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          ssm_parameter: 'my_parameter_name'
+          ssm_parameter_list: 'my_parameter_name'
           prefix: FOO_
 ```
 
@@ -115,7 +143,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          ssm_parameter: 'my_json_parameter'
+          ssm_parameter_list: 'my_json_parameter'
           simple_json: true
 ```
 
@@ -149,7 +177,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          ssm_parameter: 'my_json_parameter'
+          ssm_parameter_list: 'my_json_parameter'
           jq_filter: '.db[]|select(.default).host .db[]|select(.default).port'
           prefix: DB_
 ```
