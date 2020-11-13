@@ -30,19 +30,19 @@ get_ssm_param() {
     if [ -n "$simple_json" ] && [ "$simple_json" == "true" ]; then
       for p in $(echo "$ssm_param_value" | jq -r --arg v "$prefix" 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' ); do
         IFS='=' read -r var_name var_value <<< "$p"
-        echo ::set-env name="$(format_var_name "$var_name")"::"$var_value"
+        echo "$(format_var_name "$var_name")=$var_value" >> $GITHUB_ENV
       done
     else
       IFS=' ' read -r -a params <<< "$jq_filter"
       for var_name in "${params[@]}"; do
         var_value=$(echo "$ssm_param_value" | jq -r -c "$var_name")
-        echo ::set-env name="$(format_var_name "$var_name")"::"$var_value"
+        echo "$(format_var_name "$var_name")=$var_value" >> $GITHUB_ENV
       done
     fi
   else
     var_name=$(echo "$ssm_param" | jq -r '.Parameter.Name' | awk -F/ '{print $NF}')
     var_value=$(echo "$ssm_param" | jq -r '.Parameter.Value')
-    echo ::set-env name="$(format_var_name "$var_name")"::"$var_value"
+    echo "$(format_var_name "$var_name")=$var_value" >> $GITHUB_ENV
   fi
 }
 
