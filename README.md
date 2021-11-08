@@ -39,8 +39,9 @@ Parameter name | Type | Required | Default Value | Description
 --- | --- | --- | --- | ---
 `ssm_parameter_list` | string | true | | AWS Systems Manager parameter name (path) or comma separated list of paths
 `prefix` | string | false | AWS_SSM_ | Custom environmental variables prefix
-`simple_json` | boolean | true | false | Parse parameter values as one-level JSON object and convert keys to environmental variables (see example below).
-`jq_params` | string | true | | Custom space-separated [`jq` filters](https://stedolan.github.io/jq/) (see example below).
+`skip_prefix` | boolean | false | false | Custom environmental variables prefix
+`simple_json` | boolean | false | false | Parse parameter values as one-level JSON object and convert keys to environmental variables (see example below).
+`jq_params` | string | false | | Custom space-separated [`jq` filters](https://stedolan.github.io/jq/) (see example below).
 
 ### Examples
 
@@ -122,6 +123,32 @@ jobs:
 ```
 
 Example above will set environmental variable `FOO_MY_PARAMETER_NAME` with value from the AWS SSM parameter itself.
+
+##### Skipping the prefix
+
+It's also possible to completely skip prefixing environmental variables by using `skip_prefix` parameter:
+```yaml
+name: Parse SSM parameter
+
+on:
+  push
+
+jobs:
+  aws-ssm-to-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: aws-ssm-to-env
+        uses: bomb-on/aws-ssm-to-env@master
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          ssm_parameter_list: 'my_parameter_name'
+          skip_prefix: true
+```
+
+Example above will set environmental variable `MY_PARAMETER_NAME` with value from the AWS SSM parameter itself.
 
 #### Simple JSON parameter values
 
