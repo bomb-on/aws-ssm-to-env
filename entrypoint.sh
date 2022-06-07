@@ -24,7 +24,7 @@ format_var_name () {
 
 get_ssm_param() {
   parameter_name="$1"
-  ssm_param=$(aws --region "$region" ssm get-parameter --name "$parameter_name")
+  ssm_param=$(aws --region "$region" ssm get-parameter --name "$parameter_name" --with-decryption)
   if [ -n "$jq_filter" ] || [ -n "$simple_json" ]; then
     ssm_param_value=$(echo "$ssm_param" | jq '.Parameter.Value | fromjson')
     if [ -n "$simple_json" ] && [ "$simple_json" == "true" ]; then
